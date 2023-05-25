@@ -61,73 +61,37 @@ namespace SamsWarehouseApplication.Controllers
             }
         }
 
-        // GET: ShoppingListController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> GetShoppingListItems([FromQuery] int listID)
         {
-            return View();
+            List<Product> shoppingListProducts = _shoppingContext.ShoppingItems.Include(x => x.Product).Where(x => x.ShoppingListId == listID).Select(x => x.Product).ToList();
+
+            return PartialView("_ShoppingItemsList", shoppingListProducts);
         }
 
-        // GET: ShoppingListController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ShoppingListController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> AddNewShoppingList([FromBody] string listName)
         {
-            try
+            int? id = HttpContext.Session.GetInt32("AppUserId");
+            if (!id.HasValue)
             {
-                return RedirectToAction(nameof(Index));
+                return Unauthorized();
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: ShoppingListController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+            if(_shoppingContext.ShoppingLists.Any(x => x.ShoppingListName == listName && x.AppUserId == id))
+            {
+                return BadRequest();
+            }
 
-        // POST: ShoppingListController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
+            ShoppingList newList = new ShoppingList()
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                ShoppingListName = listName,
+                AppUserId = id.Value,
+                ShoppingListDate= DateTime.Now,
+            };
+            _shoppingContext.Add(newList);
+            _shoppingContext.SaveChanges();
 
-        // GET: ShoppingListController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ShoppingListController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return Ok();
         }
     }
 }

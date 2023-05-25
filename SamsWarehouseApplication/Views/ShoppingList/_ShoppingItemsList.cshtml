@@ -1,19 +1,16 @@
-﻿@model IEnumerable<SamsWarehouseApplication.Models.ShoppingListItem>
+﻿@model IEnumerable<SamsWarehouseApplication.Models.Product>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Quantity)
+                @Html.DisplayNameFor(model => model.ProductName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ShoppingList)
+                @Html.DisplayNameFor(model => model.ProductUnit)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Product)
+                @Html.DisplayNameFor(model => model.ProductPrice)
             </th>
             <th></th>
         </tr>
@@ -22,18 +19,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
+                @Html.DisplayFor(modelItem => item.ProductName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ShoppingList.ShoppingListName)
+                @Html.DisplayFor(modelItem => item.ProductUnit)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Product.ProductName)
+                @Html.DisplayFor(modelItem => item.ProductPrice)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ShoppingListItemId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ShoppingListItemId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ShoppingListItemId">Delete</a>
+                    <input type="button" style="width:100%" class="btn btn-danger" value="Remove"/>
             </td>
         </tr>
 }

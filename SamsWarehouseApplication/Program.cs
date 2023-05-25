@@ -9,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ShoppingContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("SamsWarehouse")));
 
 builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache();
 
 var app = builder.Build();
 

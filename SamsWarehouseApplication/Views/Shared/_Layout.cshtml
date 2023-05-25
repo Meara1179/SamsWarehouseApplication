@@ -7,12 +7,28 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SamsWarehouseApplication.styles.css" asp-append-version="true" />
+
+    @if (Context.Request.Cookies.Any(x => x.Key == "theme"))
+    {
+        if (Context?.Request?.Cookies?["theme"].ToString() == "dark")
+        {
+            <link rel="stylesheet" href="/css/DarkTheme.css" id="themeStyle" />
+        }
+        else
+        {
+            <link rel="stylesheet" href="/css/LightTheme.css" id="themeStyle" />
+        }
+    }
+    else
+    {
+        <link rel="stylesheet" href="/css/LightTheme.css" id="themeStyle" />
+    }
 </head>
-<body>
+<body style="background-color: var(--colour-0); color: var(--text-colour) !important">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-3" style="background-color: var(--colour-2)">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SamsWarehouseApplication</a>
+                <a class="navbar-brand" style="color: var(--text-colour) !important" asp-area="" asp-controller="Home" asp-action="Index">SamsWarehouseApplication</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,16 +36,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" style="color: var(--text-colour) !important" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                            <a class="nav-link" style="color: var(--text-colour) !important" asp-area="" asp-controller="ShoppingList" asp-action="Index">Shopping List</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="ShoppingList" asp-action="Index">Shopping List</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" style="color: var(--text-colour) !important" asp-area="" asp-controller="Home" asp-action="Privacy">About Us</a>
                         </li>
                     </ul>
                     @if (!String.IsNullOrWhiteSpace(Context?.Session?.GetString("UserEmail")))
@@ -48,6 +61,7 @@
                     {
                         <a asp-controller="Login" asp-action="Index" class="btn btn-success me-3">Login</a>
                     }
+                    <input type="button" value="Switch Theme" class="btn btn-success me-3" id="btnSwitchTheme" onclick="switchTheme()" />
                 </div>
             </div>
         </nav>
@@ -67,5 +81,25 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function switchTheme()
+        {
+            let currentTheme = localStorage.getItem("theme");
+
+            if (currentTheme && currentTheme == "dark")
+            {
+                localStorage.setItem("theme", "light");
+                document.cookie = "theme=lght;path=/";
+                document.getElementById("themeStyle").setAttribute("href", "/css/LightTheme.css")
+            }
+            else
+            {
+                localStorage.setItem("theme", "dark");
+                document.cookie = "theme=dark;path=/";
+                document.getElementById("themeStyle").setAttribute("href", "/css/DarkTheme.css")
+            }
+        }
+    </script>
 </body>
 </html>
