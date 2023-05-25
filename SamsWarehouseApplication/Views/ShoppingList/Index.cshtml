@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ShoppingList>
+
+@{
+    ViewData["Title"] = "Shopping Lists";
+}
+
+<div class="card">
+    <div class="row m-0 justify-content-evenly">
+        <div class="col-sm-10 p-1" id="ddlContainer">
+            <select class="form-select" disabled>
+                <option>Loading Shopping Lists...</option>
+            </select>
+        </div>
+        <div class="col-sm-2 p-1">
+            <input type="button" style="width:100%" class="btn btn-danger" value="Delete" />
+        </div>
+    </div>
+</div>
+@*<div id="ShoppingListDropDownList">
+    <partial name="_ShoppingListDropDownList"/>
+</div>
+
+<div id="ShoppingItemsListContainer">
+    <partial name="_ShoppingItemsList.cshtml" />
+</div>*@
+
+<script type="text/javascript">
+    window.addEventListener("load", async (e) => 
+    {
+        updateDDL()
+    });
+
+    async function updateDDL()
+    {
+        let result = await fetch('/ShoppingList/ShoppingListDropDownList');
+        let htmlResult = await result.text();
+        document.getElementById("ddlContainer").innerHTML = htmlResult;
+    }
+</script>
