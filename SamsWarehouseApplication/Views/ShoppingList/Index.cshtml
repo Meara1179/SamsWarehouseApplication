@@ -8,7 +8,7 @@
     <div class="text-center m-2 mb-4">
         <h2>Shopping Lists</h2>
     </div>
-    <div class="card">
+    <div class="card" style="background-color: var(--colour-4)">
         <div class="row m-0 justify-content-evenly">
             <div class="col-sm-2 p-1">
                 <input type="button" style="width:100%" class="btn btn-success" value="New List" onclick="$('#createShoppingList').modal('show')"/>
@@ -24,21 +24,26 @@
         </div>
     </div>
     <div class="p-2">
-        <div class="card" id="shoppingItemContainer" style="min-height: 40vh"></div>
+        <div class="card" id="shoppingItemContainer" style="min-height: 40vh; background-color: var(--colour-4)"></div>
     </div>
 </div>
 
 <div class="modal" id="createShoppingList" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-                <h5 class="modal-title" style="color:#000000">Create new Shopping List</h5>
+            <div class="modal-header" style="background-color: var(--colour-3)">
+                <h5 class="modal-title" style="color: var(--text-colour)">Create Shopping List</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="ModalBody">
+            <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
             <form id="createShoppingListForm">
                 <input type="text" name="listName" class="form-control"/>
-                <input type="submit" value="Add Shopping List" class="btn btn-success"/>
+                <div class="py-2">
+                    @*<input type="submit" value="Add Shopping List" class="btn btn-success"/>*@
+                    <button type="submit" class="btn btn-success" id="btnAddShoppingList">
+                            Create Shopping List
+                    </button>
+                </div>
             </form>
       </div>
     </div>
@@ -74,14 +79,22 @@
         sessionStorage.setItem("listID", selectedOption.value);
         sessionStorage.setItem("listName", selectedOption.text);
 
-        let result = await fetch("/ShoppingList/GetShoppingListItems?listID=" + selectedOption.value);
-        let htmlResult = await result.text();
-        document.getElementById("shoppingItemContainer").innerHTML = htmlResult;
+        RefreshItemList(selectedOption.value);
     }
 
     async function handleCreateShoppingList(e)
     {
         e.preventDefault();
+
+        let button = document.getElementById("btnAddShoppingList");
+
+        button.setAttribute("disabled", "disabled");
+        button.innerHTML = 
+        `
+            <span class="spinner-border text-danger spinner-border-sm" role="status" aria-hidden="true"></span>
+            Please Wait...
+        `;
+
         let result = await fetch("/ShoppingList/AddNewShoppingList", {
             method: "POST",
             headers: {
@@ -94,6 +107,40 @@
         {
             await updateDDL();
             $("#createShoppingList").modal("hide");
+
+            button.removeAttribute("disabled");
+            button.innerHTML = "Create Shopping List"
         }
+    }
+
+    async function removeShoppingListItem(itemID)
+    {
+        let listID = sessionStorage.getItem("listID");
+
+        let shopListItem = 
+        {
+            ShoppingListId: listID,
+            ProductId: itemID
+        }
+
+        let result = await fetch("ShoppingList/RemoveShoppingListItem", {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(shopListItem)
+        });
+
+        if (result.ok)
+        {
+            RefreshItemList(listID);
+        }
+    }
+
+    async function RefreshItemList(listID)
+    {
+        let result = await fetch("/ShoppingList/GetShoppingListItems?listID=" + listID);
+        let htmlResult = await result.text();
+        document.getElementById("shoppingItemContainer").innerHTML = htmlResult;
     }
 </script>

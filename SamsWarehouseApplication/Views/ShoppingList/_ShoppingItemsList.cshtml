@@ -1,16 +1,25 @@
 ﻿@model IEnumerable<SamsWarehouseApplication.Models.Product>
+@{
+    double totalPrice = 0;
+}
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ProductName)
+                <div class="style" style="color: var(--text-colour)">
+                    @Html.DisplayNameFor(model => model.ProductName)
+                </div>
             </th>
             <th>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayNameFor(model => model.ProductUnit)
+                </div>
             </th>
             <th>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayNameFor(model => model.ProductPrice)
+                </div>
             </th>
             <th></th>
         </tr>
@@ -19,18 +28,28 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductName)
+                </div>
             </td>
             <td>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductUnit)
+                </div>
             </td>
             <td>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductPrice)
+                </div>
             </td>
             <td>
-                    <input type="button" style="width:100%" class="btn btn-danger" value="Remove"/>
+                <input type="button" style="width:100%" class="btn btn-danger" value="Remove" onclick="removeShoppingListItem(@item.ProductId)" />
             </td>
         </tr>
+        totalPrice = totalPrice + item.ProductPrice;
 }
+    <div>
+        <label>Total Price: $@(totalPrice)</label>
+    </div>
     </tbody>
 </table>

@@ -1,19 +1,22 @@
 ﻿@model IEnumerable<SamsWarehouseApplication.Models.Product>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayNameFor(model => model.ProductName)
+                </div>
             </th>
             <th>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayNameFor(model => model.ProductUnit)
+                </div>
             </th>
             <th>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayNameFor(model => model.ProductPrice)
+                </div>
             </th>
             <th></th>
         </tr>
@@ -22,18 +25,28 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductName)
+                </div>
             </td>
             <td>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductUnit)
+                </div>
             </td>
             <td>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductPrice)
+                </div>
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                @if (!String.IsNullOrWhiteSpace(Context?.Session?.GetString("Authenticated")))
+                    {
+                        @if (Context.Session.GetString("Authenticated").Contains("True"))
+                        {
+                            <input type="button" style="width:100%" class="btn btn-success" value="Add to Shopping List" onclick="addToShoppingList(@item.ProductId)"/>
+                        }
+                    }
             </td>
         </tr>
 }

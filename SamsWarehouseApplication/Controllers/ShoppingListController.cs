@@ -61,6 +61,8 @@ namespace SamsWarehouseApplication.Controllers
             }
         }
 
+
+
         public async Task<IActionResult> GetShoppingListItems([FromQuery] int listID)
         {
             List<Product> shoppingListProducts = _shoppingContext.ShoppingItems.Include(x => x.Product).Where(x => x.ShoppingListId == listID).Select(x => x.Product).ToList();
@@ -77,7 +79,7 @@ namespace SamsWarehouseApplication.Controllers
                 return Unauthorized();
             }
 
-            if(_shoppingContext.ShoppingLists.Any(x => x.ShoppingListName == listName && x.AppUserId == id))
+            if (_shoppingContext.ShoppingLists.Any(x => x.ShoppingListName == listName && x.AppUserId == id))
             {
                 return BadRequest();
             }
@@ -86,12 +88,41 @@ namespace SamsWarehouseApplication.Controllers
             {
                 ShoppingListName = listName,
                 AppUserId = id.Value,
-                ShoppingListDate= DateTime.Now,
+                ShoppingListDate = DateTime.Now,
             };
             _shoppingContext.Add(newList);
             _shoppingContext.SaveChanges();
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddShoppingListItem([FromBody] ShoppingListItem item)
+        {
+            if (_shoppingContext.ShoppingItems.Any(x => x.ShoppingListId == item.ShoppingListId && x.ProductId == item.ProductId)) 
+            {
+                return BadRequest();
+            }
+
+            _shoppingContext.ShoppingItems.Add(item);
+            _shoppingContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveShoppingListItem([FromBody] ShoppingListItem item)
+        {
+            var shoppingListItems = _shoppingContext.ShoppingItems.Where(x => x.ShoppingListId == item.ShoppingListId &&
+            x.ProductId == item.ProductId).FirstOrDefault();
+
+            if (shoppingListItems != null)
+            {
+                _shoppingContext.Remove(shoppingListItems);
+                _shoppingContext.SaveChanges();
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }

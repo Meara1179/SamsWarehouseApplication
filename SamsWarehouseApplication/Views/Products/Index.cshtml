@@ -4,8 +4,89 @@
     ViewData["Title"] = "Products";
 }
 
-<h1>Index</h1>
-
-<div id="ProductsTableContainer">
+<div class="card" id="ProductsTableContainer" style="background-color: var(--colour-4)">
+    </>
     <partial name="_ProductsTable.cshtml" />
 </div>
+
+<div class="modal" id="addProductToShoppingList" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: var(--colour-3)">
+                <h5 class="modal-title" style="color:#000000">Add to Shopping List</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
+            <form id="addProductToShoppingListForm">
+                    <div class="display:flex; flex-direction: row; justify-content-evenly">
+                    <div class="col-6" id="ddlContainer">
+                        <select class="form-select" disabled>
+                            <option>Loading Shopping Lists...</option>
+                        </select>
+                    </div>
+                        <label>Quantity: </label>
+                        <input type="number" name="productQuantity" class="form-control" value="1"/>
+                    <div class="col-2; py-2">
+                            <input type="submit" value="Add to Shopping List" class="btn btn-success" />
+                    </div>
+                </div>
+            </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    window.addEventListener('load', (e) => {
+        document.getElementById('addProductToShoppingListForm').addEventListener('submit', async (e) => {
+            handleAddProductToShoppingList(e);
+        })
+    })
+
+    async function addToShoppingList(productID)
+    {
+        sessionStorage.setItem('selectedProductID', productID);
+        console.log(productID);
+
+        $("#addProductToShoppingList").modal("show");
+
+        let result = await fetch('/ShoppingList/ShoppingListDropDownList');
+        let htmlResult = await result.text();
+        document.getElementById("ddlContainer").innerHTML = htmlResult;
+    }
+
+    async function handleAddProductToShoppingList(e)
+    {
+        e.preventDefault();
+
+        let productID = sessionStorage.getItem('selectedProductID');
+        let listID = e.target["shoppingListDDL"].selectedOptions[0].value
+
+        if (listID == 0)
+        {
+            return;
+        }
+
+        let shopListItem = 
+        {
+            ShoppingListId: listID,
+            ProductId: productID,
+            Quantity: e.target["productQuantity"].value
+        }
+
+        console.log(shopListItem);
+
+        let result = await fetch("/ShoppingList/AddShoppingListItem", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(shopListItem)
+        });
+
+        if (result.ok)
+        {
+            $("#addProductToShoppingList").modal("hide");
+        }
+    }
+</script>
