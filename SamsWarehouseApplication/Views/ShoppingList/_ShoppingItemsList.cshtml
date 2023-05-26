@@ -13,6 +13,11 @@
             </th>
             <th>
                 <div class="style" style="color: var(--text-colour)">
+                    Quantity
+                </div>
+            </th>
+            <th>
+                <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayNameFor(model => model.ProductUnit)
                 </div>
             </th>
@@ -26,10 +31,16 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
+    double itemTotalPrice = 0;
         <tr>
             <td>
                 <div class="style" style="color: var(--text-colour)">
                 @Html.DisplayFor(modelItem => item.ProductName)
+                </div>
+            </td>
+            <td>
+                <div class="style" style="color: var(--text-colour)">
+                    @Html.DisplayFor(modelItem => item.ProductList.Where(x => x.ProductId == item.ProductId).FirstOrDefault().Quantity)
                 </div>
             </td>
             <td>
@@ -39,14 +50,17 @@
             </td>
             <td>
                 <div class="style" style="color: var(--text-colour)">
-                @Html.DisplayFor(modelItem => item.ProductPrice)
+                    @{
+                        itemTotalPrice = item.ProductPrice * item.ProductList.Where(x => x.ProductId == item.ProductId).FirstOrDefault().Quantity;
+                    }
+                        <label>$@(itemTotalPrice)</label>
                 </div>
             </td>
             <td>
                 <input type="button" style="width:100%" class="btn btn-danger" value="Remove" onclick="removeShoppingListItem(@item.ProductId)" />
             </td>
         </tr>
-        totalPrice = totalPrice + item.ProductPrice;
+            totalPrice = totalPrice + itemTotalPrice;
 }
     <div>
         <label>Total Price: $@(totalPrice)</label>

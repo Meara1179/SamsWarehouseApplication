@@ -19,7 +19,7 @@
                 </select>
             </div>
             <div class="col-sm-2 p-1">
-                <input type="button" style="width:100%" class="btn btn-danger" value="Delete"/>
+                <input type="button" style="width:100%" class="btn btn-danger" value="Delete" onclick="removeShoppingList()"/>
             </div>
         </div>
     </div>
@@ -39,7 +39,6 @@
             <form id="createShoppingListForm">
                 <input type="text" name="listName" class="form-control"/>
                 <div class="py-2">
-                    @*<input type="submit" value="Add Shopping List" class="btn btn-success"/>*@
                     <button type="submit" class="btn btn-success" id="btnAddShoppingList">
                             Create Shopping List
                     </button>
@@ -110,6 +109,20 @@
 
             button.removeAttribute("disabled");
             button.innerHTML = "Create Shopping List"
+        }
+    }
+
+    async function removeShoppingList()
+    {
+        let listID = sessionStorage.getItem("listID");
+
+        let result = await fetch("ShoppingList/RemoveShoppingList?listID=" + listID, {
+            method: 'DELETE'
+        });
+
+        if (result.ok)
+        {
+            updateDDL();
         }
     }
 

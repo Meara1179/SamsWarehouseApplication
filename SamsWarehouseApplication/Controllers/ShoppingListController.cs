@@ -37,7 +37,7 @@ namespace SamsWarehouseApplication.Controllers
 
             var selectList = user.UserShoppingList.Select(x => new SelectListItem
             {
-                Text = x.ShoppingListName,
+                Text = x.ShoppingListName + " - Created on: " + x.ShoppingListDate,
                 Value = x.ShoppingListId.ToString()
             });
 
@@ -65,7 +65,7 @@ namespace SamsWarehouseApplication.Controllers
 
         public async Task<IActionResult> GetShoppingListItems([FromQuery] int listID)
         {
-            List<Product> shoppingListProducts = _shoppingContext.ShoppingItems.Include(x => x.Product).Where(x => x.ShoppingListId == listID).Select(x => x.Product).ToList();
+            List<Product> shoppingListProducts = _shoppingContext.ShoppingItems.Include(x => x.Product).ThenInclude(x => x.ProductList).Where(x => x.ShoppingListId == listID).Select(x => x.Product).ToList();
 
             return PartialView("_ShoppingItemsList", shoppingListProducts);
         }
@@ -94,6 +94,21 @@ namespace SamsWarehouseApplication.Controllers
             _shoppingContext.SaveChanges();
 
             return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveShoppingList([FromQuery] int listID)
+        {
+            var shoppingList = _shoppingContext.ShoppingLists.Where(x => x.ShoppingListId == listID).FirstOrDefault();
+
+            if (shoppingList != null)
+            {
+                _shoppingContext.Remove(shoppingList);
+                _shoppingContext.SaveChanges();
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
