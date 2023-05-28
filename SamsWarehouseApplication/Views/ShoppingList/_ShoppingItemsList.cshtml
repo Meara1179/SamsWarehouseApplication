@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<SamsWarehouseApplication.Models.Product>
 @{
     double totalPrice = 0;
+    int productQuantity = 0;
 }
 
 <table class="table">
@@ -40,7 +41,11 @@
             </td>
             <td>
                 <div class="style" style="color: var(--text-colour)">
-                    @Html.DisplayFor(modelItem => item.ProductList.Where(x => x.ProductId == item.ProductId).FirstOrDefault().Quantity)
+                    @*@Html.DisplayFor(modelItem => item.ProductList.Where(x => x.ProductId == item.ProductId).FirstOrDefault().Quantity)*@
+                        @{
+                            productQuantity = item.ProductList.Where(x => x.ProductId == item.ProductId).FirstOrDefault().Quantity;
+                        }
+                        <input type="number" id="productQuantityInput" value="@productQuantity" min="1" max="99"/>
                 </div>
             </td>
             <td>
@@ -55,6 +60,9 @@
                     }
                         <label>$@(itemTotalPrice)</label>
                 </div>
+            </td>
+            <td>
+                    <input type="button" style="width:100%" class="btn btn-primary" value="Update Quantity" onclick="UpdateShoppingListItemQuantity(@item.ProductId, document.getElementById('productQuantityInput').value)" />
             </td>
             <td>
                 <input type="button" style="width:100%" class="btn btn-danger" value="Remove" onclick="removeShoppingListItem(@item.ProductId)" />

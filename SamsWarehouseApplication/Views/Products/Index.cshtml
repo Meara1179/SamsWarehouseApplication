@@ -13,7 +13,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header" style="background-color: var(--colour-3)">
-                <h5 class="modal-title" style="color:#000000">Add to Shopping List</h5>
+                <h5 class="modal-title" style="color:var(--text-colour)">Add to Shopping List</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
@@ -25,12 +25,26 @@
                         </select>
                     </div>
                         <label>Quantity: </label>
-                        <input type="number" name="productQuantity" class="form-control" value="1"/>
+                        <input type="number" name="productQuantity" class="form-control" value="1" min="1" max="99" />
                     <div class="col-2; py-2">
                             <input type="submit" value="Add to Shopping List" class="btn btn-success" />
                     </div>
                 </div>
             </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="addProductDupItem" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: var(--colour-3)">
+                <h5 class="modal-title" style="color:var(--text-colour)">Add to Shopping List</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
+        <label>Product already exists in Shopping List.</label>
       </div>
     </div>
   </div>
@@ -46,7 +60,6 @@
     async function addToShoppingList(productID)
     {
         sessionStorage.setItem('selectedProductID', productID);
-        console.log(productID);
 
         $("#addProductToShoppingList").modal("show");
 
@@ -87,6 +100,11 @@
         if (result.ok)
         {
             $("#addProductToShoppingList").modal("hide");
+        }
+        else if (!result.ok)
+        {
+            $("#addProductToShoppingList").modal("hide");
+            $("#addProductDupItem").modal("show");
         }
     }
 </script>

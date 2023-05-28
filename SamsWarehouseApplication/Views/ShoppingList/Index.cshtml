@@ -37,7 +37,7 @@
       </div>
             <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
             <form id="createShoppingListForm">
-                <input type="text" name="listName" class="form-control"/>
+                    <input type="text" name="listName" class="form-control" id="createShoppingListName" placeholder="Please input Shopping List name..." minlength="1" maxlength="200" />
                 <div class="py-2">
                     <button type="submit" class="btn btn-success" id="btnAddShoppingList">
                             Create Shopping List
@@ -47,6 +47,28 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal" id="updateShoppingListItemQuantity" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: var(--colour-3)">
+                <h5 class="modal-title" style="color:var(--text-colour)">Update Quantity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
+                <form id="updateShoppingListItemQuantityForm">
+                    <div class="display:flex; flex-direction: row; justify-content-evenly">
+                        <label>Quantity: </label>
+                        <input type="number" name="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
+                        <div class="col-2; py-2">
+                            <input type="submit" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity()"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -69,7 +91,7 @@
         ddl.addEventListener("change", async (e) => 
         {
             handleDDLChange(e);
-        })
+        })  
     }
 
     async function handleDDLChange(e)
@@ -94,22 +116,40 @@
             Please Wait...
         `;
 
-        let result = await fetch("/ShoppingList/AddNewShoppingList", {
+        if (e.target["listName"].value.length >= 1 && e.target["listName"].value.length <= 200)
+        {
+            let result = await fetch("/ShoppingList/AddNewShoppingList", {
             method: "POST",
             headers: {
                 "content-type": "application/json"
             },
             body: JSON.stringify(e.target["listName"].value)
-        });
+            });
+            if (result.ok)
+            {
+                await updateDDL();
+                $("#createShoppingList").modal("hide");
 
-        if (result.ok)
-        {
-            await updateDDL();
-            $("#createShoppingList").modal("hide");
-
-            button.removeAttribute("disabled");
-            button.innerHTML = "Create Shopping List"
+                button.removeAttribute("disabled");
+                button.innerHTML = "Create Shopping List"
+                document.getElementById("createShoppingListName").value = "";
+                    document.getElementById("createShoppingListName").placeholder = "Please input Shopping List name...";
+                sessionStorage.setItem("listID", 0);
+            }
+            if (result.status === 409) {
+                document.getElementById("createShoppingListName").value = "";
+                document.getElementById("createShoppingListName").placeholder = "Name already exists...";
+                button.removeAttribute("disabled");
+                button.innerHTML = "Create Shopping List"
+            }
+            else {
+                document.getElementById("createShoppingListName").value = "";
+                document.getElementById("createShoppingListName").placeholder = "Name must be between 1 and 200 characters long.";
+                button.removeAttribute("disabled");
+                button.innerHTML = "Create Shopping List"
+            }
         }
+
     }
 
     async function removeShoppingList()
@@ -147,6 +187,7 @@
         if (result.ok)
         {
             RefreshItemList(listID);
+            sessionStorage.setItem("listID", 0);
         }
     }
 
@@ -155,5 +196,40 @@
         let result = await fetch("/ShoppingList/GetShoppingListItems?listID=" + listID);
         let htmlResult = await result.text();
         document.getElementById("shoppingItemContainer").innerHTML = htmlResult;
+    }
+
+    async function SpawnUpdateQuantityModal(itemID)
+    {
+        $('#updateShoppingListItemQuantity').modal('show')
+        await sessionStorage.setItem("productID", itemID);
+    }
+
+    async function UpdateShoppingListItemQuantity(itemID, quantity) 
+    {
+        let listID = sessionStorage.getItem("listID");
+        //let itemID = await sessionStorage.getItem("productID");
+
+        console.log("PASS!")
+
+        let shopListItem =
+        {
+            ShoppingListId: listID,
+            ProductId: itemID,
+            Quantity: quantity
+            //Quantity: document.getElementById("updateProductQuantity").value
+        }
+
+        let result = await fetch("/ShoppingList/UpdateShoppingListItemQuantity", {
+            method: "PUT",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(shopListItem)
+        });
+
+        if (result.ok)
+        {
+            RefreshItemList(listID);
+        }
     }
 </script>
