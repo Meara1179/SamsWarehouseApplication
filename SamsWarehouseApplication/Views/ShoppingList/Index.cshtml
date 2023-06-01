@@ -37,7 +37,7 @@
       </div>
             <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
             <form id="createShoppingListForm">
-                    <input type="text" name="listName" class="form-control" id="createShoppingListName" placeholder="Please input Shopping List name..." minlength="1" maxlength="200" />
+                    <input type="text" name="listName" class="form-control" id="createShoppingListName" placeholder="Please input Shopping List name..." minlength="1" maxlength="200" required pattern=".*\S+.*" />
                 <div class="py-2">
                     <button type="submit" class="btn btn-success" id="btnAddShoppingList">
                             Create Shopping List
@@ -207,7 +207,6 @@
     async function UpdateShoppingListItemQuantity(itemID, quantity) 
     {
         let listID = sessionStorage.getItem("listID");
-        //let itemID = await sessionStorage.getItem("productID");
 
         console.log("PASS!")
 
@@ -216,7 +215,6 @@
             ShoppingListId: listID,
             ProductId: itemID,
             Quantity: quantity
-            //Quantity: document.getElementById("updateProductQuantity").value
         }
 
         let result = await fetch("/ShoppingList/UpdateShoppingListItemQuantity", {
