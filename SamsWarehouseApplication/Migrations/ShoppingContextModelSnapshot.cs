@@ -37,11 +37,10 @@ namespace SamsWarehouseApplication.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("UserEmail");
 
-                    b.Property<string>("UserPassword")
+                    b.Property<string>("UserPasswordHash")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("UserPassword");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("UserPasswordHash");
 
                     b.HasKey("AppUserId");
 
@@ -52,7 +51,7 @@ namespace SamsWarehouseApplication.Migrations
                         {
                             AppUserId = 1,
                             UserEmail = "test@gmail.com",
-                            UserPassword = "TestPassword"
+                            UserPasswordHash = "$2a$10$O3VKHolLgWx1XsbE.DAaCOqG9ohPp8v7Fn50F9KHd/y.spwfeI3uq"
                         });
                 });
 

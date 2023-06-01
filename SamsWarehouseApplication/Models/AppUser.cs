@@ -17,12 +17,11 @@ namespace SamsWarehouseApplication.Models
         [Display(Name = "Email")]
         public string UserEmail { get; set; }
 
-        [Column("UserPassword")]
+        [Column("UserPasswordHash")]
         [Required]
-        [StringLength(50)]
         [Display(Name = "Password")]
         [DataType(DataType.Password)]
-        public string UserPassword { get; set; }
+        public string UserPasswordHash { get; set; }
 
         public List<ShoppingList> UserShoppingList { get; set; }
     }

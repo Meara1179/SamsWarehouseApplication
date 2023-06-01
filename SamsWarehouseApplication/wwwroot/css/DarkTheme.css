@@ -9,3 +9,36 @@
 .tableStyle {
     color: #ffffff;
 }
+
+body {
+    background-color: var(--colour-0);
+    color: var(--text-colour)
+}
+
+.navbar {
+    background-color: var(--colour-2);
+}
+
+.nav-link {
+    color: var(--text-colour);
+}
+
+.card {
+    background-color: var(--colour-4);
+}
+
+.modal-title {
+    color: var(--text-colour);
+}
+
+.modal-header {
+    background-color: var(--colour-3);
+}
+
+.modal-body {
+    background-color: var(--colour-4);
+}
+
+.style {
+    color: var(--text-colour);
+}

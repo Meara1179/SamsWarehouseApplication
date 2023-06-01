@@ -4,14 +4,14 @@
     ViewData["Title"] = "Shopping Lists";
 }
 
-<div style="min-height: 65vh">
+<div id="shoppingListCardContainer">
     <div class="text-center m-2 mb-4">
         <h2>Shopping Lists</h2>
     </div>
-    <div class="card" style="background-color: var(--colour-4)">
+    <div class="card">
         <div class="row m-0 justify-content-evenly">
             <div class="col-sm-2 p-1">
-                <input type="button" style="width:100%" class="btn btn-success" value="New List" onclick="$('#createShoppingList').modal('show')"/>
+                <input type="button" class="btn btn-success" id="newShoppingListButton" value="New List"/>
             </div>
             <div class="col-sm-8 p-1" id="ddlContainer">
                 <select class="form-select" disabled>
@@ -19,23 +19,23 @@
                 </select>
             </div>
             <div class="col-sm-2 p-1">
-                <input type="button" style="width:100%" class="btn btn-danger" value="Delete" onclick="removeShoppingList()"/>
+                <input type="button" class="btn btn-danger" id="deleteShoppingList" value="Delete"/>
             </div>
         </div>
     </div>
     <div class="p-2">
-        <div class="card" id="shoppingItemContainer" style="min-height: 40vh; background-color: var(--colour-4)"></div>
+        <div class="card" id="shoppingItemContainer"></div>
     </div>
 </div>
 
 <div class="modal" id="createShoppingList" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-            <div class="modal-header" style="background-color: var(--colour-3)">
-                <h5 class="modal-title" style="color: var(--text-colour)">Create Shopping List</h5>
+            <div class="modal-header">
+                <h5 class="modal-title">Create Shopping List</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-            <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
+            <div class="modal-body" id="ModalBody">
             <form id="createShoppingListForm">
                     <input type="text" name="listName" class="form-control" id="createShoppingListName" placeholder="Please input Shopping List name..." minlength="1" maxlength="200" required pattern=".*\S+.*" />
                 <div class="py-2">
@@ -52,17 +52,17 @@
 <div class="modal" id="updateShoppingListItemQuantity" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: var(--colour-3)">
-                <h5 class="modal-title" style="color:var(--text-colour)">Update Quantity</h5>
+            <div class="modal-header">
+                <h5 class="modal-title">Update Quantity</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
+            <div class="modal-body" id="ModalBody">
                 <form id="updateShoppingListItemQuantityForm">
                     <div class="display:flex; flex-direction: row; justify-content-evenly">
                         <label>Quantity: </label>
                         <input type="number" name="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
                         <div class="col-2; py-2">
-                            <input type="submit" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity()"/>
+                            <input type="submit" value="Update Quantity" class="btn btn-success"/>
                         </div>
                     </div>
                 </form>
@@ -70,164 +70,6 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    window.addEventListener("load", async (e) => 
-    {
-        updateDDL();
-        document.getElementById("createShoppingListForm").addEventListener('submit', async (e) => {
-            await handleCreateShoppingList(e);
-        })
-    });
-
-    async function updateDDL()
-    {
-        let result = await fetch('/ShoppingList/ShoppingListDropDownList');
-        let htmlResult = await result.text();
-        document.getElementById("ddlContainer").innerHTML = htmlResult;
-
-        let ddlCOntainer = document.getElementById("ddlContainer");
-        let ddl = ddlCOntainer.querySelector("select");
-        ddl.addEventListener("change", async (e) => 
-        {
-            handleDDLChange(e);
-        })  
-    }
-
-    async function handleDDLChange(e)
-    {
-        let selectedOption = e.target.selectedOptions[0];
-        sessionStorage.setItem("listID", selectedOption.value);
-        sessionStorage.setItem("listName", selectedOption.text);
-
-        RefreshItemList(selectedOption.value);
-    }
-
-    async function handleCreateShoppingList(e)
-    {
-        e.preventDefault();
-
-        let button = document.getElementById("btnAddShoppingList");
-
-        button.setAttribute("disabled", "disabled");
-        button.innerHTML = 
-        `
-            <span class="spinner-border text-danger spinner-border-sm" role="status" aria-hidden="true"></span>
-            Please Wait...
-        `;
-
-        if (e.target["listName"].value.length >= 1 && e.target["listName"].value.length <= 200)
-        {
-            let result = await fetch("/ShoppingList/AddNewShoppingList", {
-            method: "POST",
-            headers: {
-                "content-type": "application/json"
-            },
-            body: JSON.stringify(e.target["listName"].value)
-            });
-            if (result.ok)
-            {
-                await updateDDL();
-                $("#createShoppingList").modal("hide");
-
-                button.removeAttribute("disabled");
-                button.innerHTML = "Create Shopping List"
-                document.getElementById("createShoppingListName").value = "";
-                    document.getElementById("createShoppingListName").placeholder = "Please input Shopping List name...";
-                sessionStorage.setItem("listID", 0);
-            }
-            if (result.status === 409) {
-                document.getElementById("createShoppingListName").value = "";
-                document.getElementById("createShoppingListName").placeholder = "Name already exists...";
-                button.removeAttribute("disabled");
-                button.innerHTML = "Create Shopping List"
-            }
-            else {
-                document.getElementById("createShoppingListName").value = "";
-                document.getElementById("createShoppingListName").placeholder = "Name must be between 1 and 200 characters long.";
-                button.removeAttribute("disabled");
-                button.innerHTML = "Create Shopping List"
-            }
-        }
-
-    }
-
-    async function removeShoppingList()
-    {
-        let listID = sessionStorage.getItem("listID");
-
-        let result = await fetch("ShoppingList/RemoveShoppingList?listID=" + listID, {
-            method: 'DELETE'
-        });
-
-        if (result.ok)
-        {
-            updateDDL();
-        }
-    }
-
-    async function removeShoppingListItem(itemID)
-    {
-        let listID = sessionStorage.getItem("listID");
-
-        let shopListItem = 
-        {
-            ShoppingListId: listID,
-            ProductId: itemID
-        }
-
-        let result = await fetch("ShoppingList/RemoveShoppingListItem", {
-            method: 'DELETE',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(shopListItem)
-        });
-
-        if (result.ok)
-        {
-            RefreshItemList(listID);
-            sessionStorage.setItem("listID", 0);
-        }
-    }
-
-    async function RefreshItemList(listID)
-    {
-        let result = await fetch("/ShoppingList/GetShoppingListItems?listID=" + listID);
-        let htmlResult = await result.text();
-        document.getElementById("shoppingItemContainer").innerHTML = htmlResult;
-    }
-
-    async function SpawnUpdateQuantityModal(itemID)
-    {
-        $('#updateShoppingListItemQuantity').modal('show')
-        await sessionStorage.setItem("productID", itemID);
-    }
-
-    async function UpdateShoppingListItemQuantity(itemID, quantity) 
-    {
-        let listID = sessionStorage.getItem("listID");
-
-        console.log("PASS!")
-
-        let shopListItem =
-        {
-            ShoppingListId: listID,
-            ProductId: itemID,
-            Quantity: quantity
-        }
-
-        let result = await fetch("/ShoppingList/UpdateShoppingListItemQuantity", {
-            method: "PUT",
-            headers: {
-                "content-type": "application/json"
-            },
-            body: JSON.stringify(shopListItem)
-        });
-
-        if (result.ok)
-        {
-            RefreshItemList(listID);
-        }
-    }
-</script>
+@section Scripts {
+    <script src="~/js/ShoppingListsScripts.js" asp-append-version="true"></script>
+}

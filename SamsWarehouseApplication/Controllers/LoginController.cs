@@ -32,7 +32,7 @@ namespace SamsWarehouseApplication.Controllers
         [HttpPost]
         public IActionResult Index(AppUserDTO user)
         {
-            var users = _shoppingContext.AppUsers.Where(x => x.UserEmail == user.UserEmail && x.UserPassword == user.UserPassword).FirstOrDefault();
+            var users = _shoppingContext.AppUsers.Where(x => x.UserEmail == user.UserEmail && x.UserPasswordHash == user.UserPassword).FirstOrDefault();
 
             if (users == null)
             {

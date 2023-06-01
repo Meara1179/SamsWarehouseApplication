@@ -20,3 +20,19 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+h1 {
+   text-align:center
+}
+
+p {
+    text-align:center
+}
+
+button {
+    width: 100%
+}
+
+.shoppingListCardContainer {
+    min-height: 65vh;
+}

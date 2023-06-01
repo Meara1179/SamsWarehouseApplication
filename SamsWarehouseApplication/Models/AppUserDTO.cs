@@ -5,8 +5,11 @@ namespace SamsWarehouseApplication.Models
 {
     public class AppUserDTO
     {
+        [Display(Name = "Email")]
         public string UserEmail { get; set; }
 
+        [Display(Name = "Password")]
+        [DataType(DataType.Password)]
         public string UserPassword { get; set; }
     }
 }

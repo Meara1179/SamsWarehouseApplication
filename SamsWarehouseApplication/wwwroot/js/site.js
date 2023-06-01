@@ -1,4 +1,21 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// On load, adds an event listen to the theme switch button.
+window.addEventListener("load", () => {
+    document.getElementById("btnSwitchTheme").addEventListener("click", (e) => {
+        switchTheme();
+    });
+})
 
-// Write your JavaScript code.
+function switchTheme() {
+    let currentTheme = localStorage.getItem("theme");
+
+    if (currentTheme && currentTheme == "dark") {
+        localStorage.setItem("theme", "light");
+        document.cookie = "theme=lght;path=/";
+        document.getElementById("themeStyle").setAttribute("href", "/css/LightTheme.css")
+    }
+    else {
+        localStorage.setItem("theme", "dark");
+        document.cookie = "theme=dark;path=/";
+        document.getElementById("themeStyle").setAttribute("href", "/css/DarkTheme.css")
+    }
+}
