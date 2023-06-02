@@ -20,7 +20,8 @@ namespace SamsWarehouseApplication.Migrations
                     AppUserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserEmail = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    UserPasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    UserPasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserRole = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,8 +93,12 @@ namespace SamsWarehouseApplication.Migrations
 
             migrationBuilder.InsertData(
                 table: "AppUsers",
-                columns: new[] { "AppUserId", "UserEmail", "UserPasswordHash" },
-                values: new object[] { 1, "test@gmail.com", "$2a$10$O3VKHolLgWx1XsbE.DAaCOqG9ohPp8v7Fn50F9KHd/y.spwfeI3uq" });
+                columns: new[] { "AppUserId", "UserRole", "UserEmail", "UserPasswordHash" },
+                values: new object[,]
+                {
+                    { 1, "Admin", "test@gmail.com", "$2a$11$R2UbF5jBO34lGDHp7mZyEeWECvTVM6oelzmdC3Uh/TOKl8w83HcMW" },
+                    { 2, "User", "customer@gmail.com", "$2a$11$qPCMOY8sASLVh3KQhFCiW.TR9yss6gBPodoasQtSEMafmIpamQpBG" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Products",

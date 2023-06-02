@@ -1,4 +1,5 @@
-﻿window.addEventListener("load", async (e) => {
+﻿// Adds an event listen that listens for when the page loads.
+window.addEventListener("load", async (e) => {
     updateDDL();
     document.getElementById("createShoppingListForm").addEventListener('submit', async (e) => {
         await handleCreateShoppingList(e);
@@ -17,8 +18,9 @@
     })
 });
 
+// Fetches the shopping list drop down list and replaces the indexes of the drop down list with the fetched data.
 async function updateDDL() {
-    let result = await fetch('/ShoppingList/ShoppingListDropDownList');
+    let result = await advFetch('/ShoppingList/ShoppingListDropDownList');
     let htmlResult = await result.text();
     document.getElementById("ddlContainer").innerHTML = htmlResult;
 
@@ -29,6 +31,7 @@ async function updateDDL() {
     })
 }
 
+// Activates on changing the selected list in the drop down list, saves the selected list ID and name to storage.
 async function handleDDLChange(e) {
     let selectedOption = e.target.selectedOptions[0];
     sessionStorage.setItem("listID", selectedOption.value);
@@ -37,6 +40,7 @@ async function handleDDLChange(e) {
     RefreshItemList(selectedOption.value);
 }
 
+// Passes supplied value into fetch request to create new Shopping List, client side validation ensuring list name is between 1 and 200 characters.
 async function handleCreateShoppingList(e) {
     e.preventDefault();
 
@@ -50,7 +54,7 @@ async function handleCreateShoppingList(e) {
         `;
 
     if (e.target["listName"].value.length >= 1 && e.target["listName"].value.length <= 200) {
-        let result = await fetch("/ShoppingList/AddNewShoppingList", {
+        let result = await advFetch("/ShoppingList/AddNewShoppingList", {
             method: "POST",
             headers: {
                 "content-type": "application/json"
@@ -83,10 +87,11 @@ async function handleCreateShoppingList(e) {
 
 }
 
+// Deletes the currently selected shopping list in the drop down list.
 async function removeShoppingList() {
     let listID = sessionStorage.getItem("listID");
 
-    let result = await fetch("ShoppingList/RemoveShoppingList?listID=" + listID, {
+    let result = await advFetch("ShoppingList/RemoveShoppingList?listID=" + listID, {
         method: 'DELETE'
     });
 
@@ -95,6 +100,7 @@ async function removeShoppingList() {
     }
 }
 
+// Removes the selected item from the specific shopping list.
 async function removeShoppingListItem(itemID) {
     let listID = sessionStorage.getItem("listID");
 
@@ -104,7 +110,7 @@ async function removeShoppingListItem(itemID) {
         ProductId: itemID
     }
 
-    let result = await fetch("ShoppingList/RemoveShoppingListItem", {
+    let result = await advFetch("ShoppingList/RemoveShoppingListItem", {
         method: 'DELETE',
         headers: {
             'content-type': 'application/json'
@@ -118,6 +124,7 @@ async function removeShoppingListItem(itemID) {
     }
 }
 
+// Handles displaying the shopping list items of the selected shopping list in the table.
 async function RefreshItemList(listID) {
     let result = await fetch("/ShoppingList/GetShoppingListItems?listID=" + listID);
     let htmlResult = await result.text();
@@ -143,12 +150,14 @@ async function RefreshItemList(listID) {
     )
 }
 
+// Shows the update product quantity modal.
 async function SpawnUpdateQuantityModal(itemID) {
     sessionStorage.setItem("productID", itemID);
     $('#updateShoppingListItemQuantity').modal('show')
 
 }
 
+// Takes the inputed value and updates the selected shopping list item with the new quantity.
 async function UpdateShoppingListItemQuantity(quantity) {
     let listID = sessionStorage.getItem("listID");
     let itemID = sessionStorage.getItem("productID")
@@ -162,7 +171,7 @@ async function UpdateShoppingListItemQuantity(quantity) {
         Quantity: quantity
     }
 
-    let result = await fetch("/ShoppingList/UpdateShoppingListItemQuantity", {
+    let result = await advFetch("/ShoppingList/UpdateShoppingListItemQuantity", {
         method: "PUT",
         headers: {
             "content-type": "application/json"

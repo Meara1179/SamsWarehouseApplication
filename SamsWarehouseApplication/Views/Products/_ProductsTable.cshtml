@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SamsWarehouseApplication.Models.Product>
+﻿@using System.Security.Claims;
+@model IEnumerable<SamsWarehouseApplication.Models.Product>
 
 <table class="table" id="addProductToList">
     <thead>
@@ -40,13 +41,10 @@
                 </div>
             </td>
             <td>
-                @if (!String.IsNullOrWhiteSpace(Context?.Session?.GetString("Authenticated")))
-                    {
-                        @if (Context.Session.GetString("Authenticated").Contains("True"))
-                        {
-                            <input type="button" class="btn btn-success" value="Add to Shopping List" name="@item.ProductId"/>
-                        }
-                    }
+            @if (Context.User.Identity.IsAuthenticated)
+            {
+                <input type="button" class="btn btn-success" value="Add to Shopping List" name="@item.ProductId"/>
+            }
             </td>
         </tr>
 }

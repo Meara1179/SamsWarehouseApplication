@@ -23,6 +23,10 @@ namespace SamsWarehouseApplication.Models
         [DataType(DataType.Password)]
         public string UserPasswordHash { get; set; }
 
+        [Column("UserRole")]
+        [Required]
+        public string AppUserRole { get; set; }
+
         public List<ShoppingList> UserShoppingList { get; set; }
     }
 }

@@ -1,17 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SamsWarehouseApplication.Models;
+using SamsWarehouseApplication.Services;
+using System.Security.Claims;
 
 namespace SamsWarehouseApplication.Controllers
 {
     public class ShoppingListController : Controller
     {
         private readonly ShoppingContext _shoppingContext;
-        public ShoppingListController(ShoppingContext shoppingContext)
+        private readonly SanitizationService _sanitizationService;
+        public ShoppingListController(ShoppingContext shoppingContext, SanitizationService sanitizationService)
         {
             _shoppingContext = shoppingContext;
+            _sanitizationService = sanitizationService;
         }
 
         /// <summary>
@@ -20,16 +25,11 @@ namespace SamsWarehouseApplication.Controllers
         /// </summary>
         /// <returns>View/RedirectToAction</returns>
         // GET: ShoppingListController
+        [Authorize(Roles = "User, Admin")]
         public ActionResult Index()
         {
-            if (HttpContext.Session.GetInt32("AppUserId") != null)
-            {
+
                 return View();
-            }
-            else
-            {
-                return RedirectToAction("Index", "Login");
-            }
         }
 
         /// <summary>
@@ -39,9 +39,11 @@ namespace SamsWarehouseApplication.Controllers
         /// to the Index View.
         /// </summary>
         /// <returns>PartialView/BadRequest</returns>
+        [Authorize(Roles = "User, Admin")]
         public async Task<ActionResult> ShoppingListDropDownList()
         {
-            var user = _shoppingContext.AppUsers.Where(x => x.AppUserId == HttpContext.Session.GetInt32("AppUserId")).Include(x => x.UserShoppingList).FirstOrDefault();
+            int userId = Int32.Parse(HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Sid).Select(x => x.Value).SingleOrDefault());
+            var user = _shoppingContext.AppUsers.Where(x => x.AppUserId == userId).Include(x => x.UserShoppingList).FirstOrDefault();
             if (user == null)
             {
                 return BadRequest();
@@ -65,18 +67,13 @@ namespace SamsWarehouseApplication.Controllers
         /// </summary>
         /// <returns>PartialView/Unauthorized</returns>
         [HttpGet]
+        [Authorize(Roles = "User, Admin")]
         public async Task<ActionResult> ShoppingItemsList()
         {
-            if (HttpContext.Session.GetInt32("AppUserId") != null)
-            {
-                var shoppingListData = _shoppingContext.ShoppingLists.Where(x => x.AppUserId == HttpContext.Session.GetInt32("AppUserId")).AsEnumerable();
+            int userId = Int32.Parse(HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Sid).Select(x => x.Value).SingleOrDefault());
+            var shoppingListData = _shoppingContext.ShoppingLists.Where(x => x.AppUserId == userId).AsEnumerable();
 
-                return PartialView("_ShoppingListPartial");
-            }
-            else
-            {
-                return Unauthorized();
-            }
+            return PartialView("_ShoppingListPartial");
         }
 
         /// <summary>
@@ -85,6 +82,7 @@ namespace SamsWarehouseApplication.Controllers
         /// </summary>
         /// <param name="listID"></param>
         /// <returns>PartialView</returns>
+        [Authorize(Roles = "User, Admin")]
         public async Task<IActionResult> GetShoppingListItems([FromQuery] int listID)
         {
             List<Product> shoppingListProducts = _shoppingContext.ShoppingItems.Include(x => x.Product).ThenInclude(x => x.ProductList).Where(x => x.ShoppingListId == listID).Select(x => x.Product).ToList();
@@ -100,23 +98,23 @@ namespace SamsWarehouseApplication.Controllers
         /// <param name="listName"></param>
         /// <returns>Unauthorized/BadRequest/Ok</returns>
         [HttpPost]
+        [Authorize(Roles = "User, Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddNewShoppingList([FromBody] string listName)
         {
-            int? id = HttpContext.Session.GetInt32("AppUserId");
-            if (!id.HasValue)
-            {
-                return Unauthorized();
-            }
+            int userId = Int32.Parse(HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Sid).Select(x => x.Value).SingleOrDefault());
 
-            if (_shoppingContext.ShoppingLists.Any(x => x.ShoppingListName == listName && x.AppUserId == id))
+            if (_shoppingContext.ShoppingLists.Any(x => x.ShoppingListName == listName && x.AppUserId == userId))
             {
                 return StatusCode(409);
             }
 
+            var sanitizedName = _sanitizationService.Sanitizer.Sanitize(listName);
+
             ShoppingList newList = new ShoppingList()
             {
-                ShoppingListName = listName,
-                AppUserId = id.Value,
+                ShoppingListName = sanitizedName,
+                AppUserId = userId,
                 ShoppingListDate = DateTime.Now,
             };
             _shoppingContext.Add(newList);
@@ -131,6 +129,8 @@ namespace SamsWarehouseApplication.Controllers
         /// <param name="listID"></param>
         /// <returns>Ok/BadRequest</returns>
         [HttpDelete]
+        [Authorize(Roles = "User, Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveShoppingList([FromQuery] int listID)
         {
             var shoppingList = _shoppingContext.ShoppingLists.Where(x => x.ShoppingListId == listID).FirstOrDefault();
@@ -152,6 +152,8 @@ namespace SamsWarehouseApplication.Controllers
         /// <param name="item"></param>
         /// <returns>Ok</returns>
         [HttpPost]
+        [Authorize(Roles = "User, Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddShoppingListItem([FromBody] ShoppingListItem item)
         {
             if (_shoppingContext.ShoppingItems.Any(x => x.ShoppingListId == item.ShoppingListId && x.ProductId == item.ProductId)) 
@@ -170,6 +172,8 @@ namespace SamsWarehouseApplication.Controllers
         /// <param name="item"></param>
         /// <returns>Ok/BadRequest</returns>
         [HttpDelete]
+        [Authorize(Roles = "User, Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveShoppingListItem([FromBody] ShoppingListItem item)
         {
             var shoppingListItems = _shoppingContext.ShoppingItems.Where(x => x.ShoppingListId == item.ShoppingListId &&
@@ -191,6 +195,8 @@ namespace SamsWarehouseApplication.Controllers
         /// <param name="item"></param>
         /// <returns>Ok/BadRequest</returns>
         [HttpPut]
+        [Authorize(Roles = "User, Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateShoppingListItemQuantity([FromBody] ShoppingListItem item)
         {
             var shoppingListItems = _shoppingContext.ShoppingItems.Where(x => x.ShoppingListId == item.ShoppingListId &&

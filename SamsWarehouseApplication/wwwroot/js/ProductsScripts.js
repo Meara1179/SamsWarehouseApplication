@@ -1,4 +1,5 @@
-﻿window.addEventListener('load', (e) => {
+﻿// Adds an event listen that listens for when the page loads.
+window.addEventListener('load', (e) => {
     document.getElementById('addProductToShoppingListForm').addEventListener('submit', async (e) => {
         handleAddProductToShoppingList(e);
     })
@@ -10,16 +11,18 @@
     })
 })
 
+// Shows the add to shopping list modal and passes through the selected product id.
 async function addToShoppingList(productID) {
     sessionStorage.setItem('selectedProductID', productID);
 
     $("#addProductToShoppingList").modal("show");
 
-    let result = await fetch('/ShoppingList/ShoppingListDropDownList');
+    let result = await advFetch('/ShoppingList/ShoppingListDropDownList');
     let htmlResult = await result.text();
     document.getElementById("ddlContainer").innerHTML = htmlResult;
 }
 
+// Function that takes the values from the modal and creates a new shopListItem object to pass into the controller.
 async function handleAddProductToShoppingList(e) {
     e.preventDefault();
 
@@ -39,7 +42,7 @@ async function handleAddProductToShoppingList(e) {
 
     console.log(shopListItem);
 
-    let result = await fetch("/ShoppingList/AddShoppingListItem", {
+    let result = await advFetch("/ShoppingList/AddShoppingListItem", {
         method: "POST",
         headers: {
             "content-type": "application/json"

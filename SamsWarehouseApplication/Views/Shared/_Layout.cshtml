@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims;
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -48,20 +49,16 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutUs">About Us</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Encryption" asp-action="Index">Encryption</a>
+                        </li>
                     </ul>
-                    @if (!String.IsNullOrWhiteSpace(Context?.Session?.GetString("UserEmail")))
+                    @if (Context.User.Identity.IsAuthenticated)
                     {
-                        <div class="me-3">@Context.Session.GetString("UserEmail")</div>
-                    }
-
-                    @if (!String.IsNullOrWhiteSpace(Context?.Session?.GetString("Authenticated")))
-                    {
-                        @if (Context.Session.GetString("Authenticated").Contains("True"))
-                        {
+                            <div class="me-3">@Context.User.Claims.Where(x => x.Type == ClaimTypes.Name).Select(x => x.Value).SingleOrDefault()</div>
                             <a asp-controller="Login" asp-action="Logout" class="btn btn-danger me-3">Logout</a>
-                        }
                     }
-                    @if (String.IsNullOrWhiteSpace(Context?.Session?.GetString("Authenticated")))
+                    else
                     {
                         <a asp-controller="Login" asp-action="Index" class="btn btn-success me-3">Login</a>
                     }

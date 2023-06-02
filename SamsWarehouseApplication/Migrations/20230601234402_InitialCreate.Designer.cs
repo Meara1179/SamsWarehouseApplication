@@ -12,7 +12,7 @@ using SamsWarehouseApplication.Models;
 namespace SamsWarehouseApplication.Migrations
 {
     [DbContext(typeof(ShoppingContext))]
-    [Migration("20230601145520_InitialCreate")]
+    [Migration("20230601234402_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -34,6 +34,11 @@ namespace SamsWarehouseApplication.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppUserId"));
 
+                    b.Property<string>("AppUserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("UserRole");
+
                     b.Property<string>("UserEmail")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -53,8 +58,16 @@ namespace SamsWarehouseApplication.Migrations
                         new
                         {
                             AppUserId = 1,
+                            AppUserRole = "Admin",
                             UserEmail = "test@gmail.com",
-                            UserPasswordHash = "$2a$10$O3VKHolLgWx1XsbE.DAaCOqG9ohPp8v7Fn50F9KHd/y.spwfeI3uq"
+                            UserPasswordHash = "$2a$11$R2UbF5jBO34lGDHp7mZyEeWECvTVM6oelzmdC3Uh/TOKl8w83HcMW"
+                        },
+                        new
+                        {
+                            AppUserId = 2,
+                            AppUserRole = "User",
+                            UserEmail = "customer@gmail.com",
+                            UserPasswordHash = "$2a$11$qPCMOY8sASLVh3KQhFCiW.TR9yss6gBPodoasQtSEMafmIpamQpBG"
                         });
                 });
 

@@ -17,7 +17,6 @@ namespace SamsWarehouseApplication.Models
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            string salt = BCrypt.Net.BCrypt.GenerateSalt(10);
             base.OnModelCreating(builder);
 
             builder.Entity<ShoppingListItem>()
@@ -43,7 +42,15 @@ namespace SamsWarehouseApplication.Models
                 {
                     AppUserId = 1,
                     UserEmail = "test@gmail.com",
-                    UserPasswordHash = BCrypt.Net.BCrypt.HashPassword("password", salt)
+                    UserPasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("password"),
+                    AppUserRole = "Admin"
+                },
+                new AppUser
+                {
+                    AppUserId = 2,
+                    UserEmail = "customer@gmail.com",
+                    UserPasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("password"),
+                    AppUserRole = "User"
                 }
                 );
 
