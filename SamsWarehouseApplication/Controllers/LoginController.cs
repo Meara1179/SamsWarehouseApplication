@@ -46,7 +46,7 @@ namespace SamsWarehouseApplication.Controllers
 
             if (users == null)
             {
-                return RedirectToAction("Index", "Login");
+                return View();
             }
 
             var claims = new List<Claim>
