@@ -60,9 +60,9 @@
                 <form id="updateShoppingListItemQuantityForm">
                     <div class="display:flex; flex-direction: row; justify-content-evenly">
                         <label>Quantity: </label>
-                        <input type="number" name="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
+                        <input type="number" name="updateProductQuantity" id="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
                         <div class="col-2; py-2">
-                            <input type="submit" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity()"/>
+                            <input type="submit" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity(document.getElementById('updateProductQuantity').value)" />
                         </div>
                     </div>
                 </form>
@@ -76,6 +76,9 @@
     {
         updateDDL();
         document.getElementById("createShoppingListForm").addEventListener('submit', async (e) => {
+            await handleCreateShoppingList(e);
+        })
+        document.getElementById("updateShoppingListItemQuantityForm").addEventListener('submit', async (e) => {
             await handleCreateShoppingList(e);
         })
     });
@@ -116,7 +119,7 @@
             Please Wait...
         `;
 
-        if (e.target["listName"].value.length >= 1 && e.target["listName"].value.length <= 200)
+        if (e.target["listName"].value.trim.length >= 1 && e.target["listName"].value.length <= 200)
         {
             let result = await fetch("/ShoppingList/AddNewShoppingList", {
             method: "POST",
@@ -133,7 +136,7 @@
                 button.removeAttribute("disabled");
                 button.innerHTML = "Create Shopping List"
                 document.getElementById("createShoppingListName").value = "";
-                    document.getElementById("createShoppingListName").placeholder = "Please input Shopping List name...";
+                document.getElementById("createShoppingListName").placeholder = "Please input Shopping List name...";
                 sessionStorage.setItem("listID", 0);
             }
             if (result.status === 409) {
@@ -142,12 +145,13 @@
                 button.removeAttribute("disabled");
                 button.innerHTML = "Create Shopping List"
             }
-            else {
-                document.getElementById("createShoppingListName").value = "";
-                document.getElementById("createShoppingListName").placeholder = "Name must be between 1 and 200 characters long.";
-                button.removeAttribute("disabled");
-                button.innerHTML = "Create Shopping List"
-            }
+        }
+        else
+        {
+            document.getElementById("createShoppingListName").value = "";
+            document.getElementById("createShoppingListName").placeholder = "Name must be between 1 and 200 characters long.";
+            button.removeAttribute("disabled");
+            button.innerHTML = "Create Shopping List"
         }
 
     }
@@ -198,16 +202,14 @@
         document.getElementById("shoppingItemContainer").innerHTML = htmlResult;
     }
 
-    async function SpawnUpdateQuantityModal(itemID)
-    {
+    async function SpawnUpdateQuantityModal(itemID) {
+        sessionStorage.setItem("productID", itemID);
         $('#updateShoppingListItemQuantity').modal('show')
-        await sessionStorage.setItem("productID", itemID);
     }
 
-    async function UpdateShoppingListItemQuantity(itemID, quantity) 
-    {
+    async function UpdateShoppingListItemQuantity(quantity) {
         let listID = sessionStorage.getItem("listID");
-        //let itemID = await sessionStorage.getItem("productID");
+        let itemID = sessionStorage.getItem("productID")
 
         console.log("PASS!")
 
@@ -216,7 +218,6 @@
             ShoppingListId: listID,
             ProductId: itemID,
             Quantity: quantity
-            //Quantity: document.getElementById("updateProductQuantity").value
         }
 
         let result = await fetch("/ShoppingList/UpdateShoppingListItemQuantity", {
@@ -227,8 +228,7 @@
             body: JSON.stringify(shopListItem)
         });
 
-        if (result.ok)
-        {
+        if (result.ok) {
             RefreshItemList(listID);
         }
     }
