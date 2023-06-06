@@ -54,7 +54,7 @@
                     @{
                         itemTotalPrice = item.ProductPrice * item.ProductList.Where(x => x.ProductId == item.ProductId).FirstOrDefault().Quantity;
                     }
-                        <label>$@(itemTotalPrice)</label>
+                        <label>$@(Math.Round(itemTotalPrice, 2))</label>
                 </div>
             </td>
             <td>
@@ -66,8 +66,8 @@
         </tr>
             totalPrice = totalPrice + itemTotalPrice;
 }
-    <div>
-        <label>Total Price: $@(totalPrice)</label>
+        <div>
+            <label style="padding: 10px; font-weight: bold">Total Price: $@(Math.Round(totalPrice, 2))</label>
     </div>
     </tbody>
 </table>

@@ -78,9 +78,6 @@
         document.getElementById("createShoppingListForm").addEventListener('submit', async (e) => {
             await handleCreateShoppingList(e);
         })
-        document.getElementById("updateShoppingListItemQuantityForm").addEventListener('submit', async (e) => {
-            await handleCreateShoppingList(e);
-        })
     });
 
     async function updateDDL()
@@ -173,6 +170,7 @@
     async function removeShoppingListItem(itemID)
     {
         let listID = sessionStorage.getItem("listID");
+        console.log(itemID)
 
         let shopListItem = 
         {
@@ -191,7 +189,7 @@
         if (result.ok)
         {
             RefreshItemList(listID);
-            sessionStorage.setItem("listID", 0);
+            //sessionStorage.setItem("listID", 0);
         }
     }
 
@@ -211,7 +209,9 @@
         let listID = sessionStorage.getItem("listID");
         let itemID = sessionStorage.getItem("productID")
 
-        console.log("PASS!")
+        console.log(quantity)
+        console.log(listID)
+        console.log(itemID)
 
         let shopListItem =
         {
@@ -219,6 +219,8 @@
             ProductId: itemID,
             Quantity: quantity
         }
+
+        console.log(shopListItem)
 
         let result = await fetch("/ShoppingList/UpdateShoppingListItemQuantity", {
             method: "PUT",
@@ -230,6 +232,7 @@
 
         if (result.ok) {
             RefreshItemList(listID);
+            sessionStorage.setItem("listID", 0);
         }
     }
 </script>

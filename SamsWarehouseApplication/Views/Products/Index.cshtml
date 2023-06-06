@@ -12,11 +12,11 @@
 <div class="modal" id="addProductToShoppingList" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
-                <h5 class="modal-title">Add to Shopping List</h5>
+            <div class="modal-header" style="background-color: var(--colour-3)">
+                <h5 class="modal-title" style="color:var(--text-colour)">Add to Shopping List</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="ModalBody">
+            <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
             <form id="addProductToShoppingListForm">
                     <div class="display:flex; flex-direction: row; justify-content-evenly">
                     <div class="col-6" id="ddlContainer">
@@ -25,7 +25,7 @@
                         </select>
                     </div>
                         <label>Quantity: </label>
-                        <input type="number" name="productQuantity" class="form-control" value="1" min="1" max="99" />
+                        <input type="number" name="productQuantity" class="form-control" value="1" min="1" max="99" size="2"/>
                     <div class="col-2; py-2">
                             <input type="submit" value="Add to Shopping List" class="btn btn-success" />
                     </div>
