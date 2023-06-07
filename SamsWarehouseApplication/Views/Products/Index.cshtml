@@ -51,12 +51,14 @@
 </div>
 
 <script>
+    ﻿// Adds an event listen that listens for when the page loads.
     window.addEventListener('load', (e) => {
         document.getElementById('addProductToShoppingListForm').addEventListener('submit', async (e) => {
             handleAddProductToShoppingList(e);
         })
     })
 
+    // Shows the add to shopping list modal and passes through the selected product id.
     async function addToShoppingList(productID)
     {
         sessionStorage.setItem('selectedProductID', productID);
@@ -68,6 +70,7 @@
         document.getElementById("ddlContainer").innerHTML = htmlResult;
     }
 
+    // Function that takes the values from the modal and creates a new shopListItem object to pass into the controller.
     async function handleAddProductToShoppingList(e)
     {
         e.preventDefault();

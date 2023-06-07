@@ -72,6 +72,7 @@
 </div>
 
 <script type="text/javascript">
+    ﻿// Adds an event listen that listens for when the page loads.
     window.addEventListener("load", async (e) => 
     {
         updateDDL();
@@ -80,6 +81,7 @@
         })
     });
 
+    // Fetches the shopping list drop down list and replaces the indexes of the drop down list with the fetched data.
     async function updateDDL()
     {
         let result = await fetch('/ShoppingList/ShoppingListDropDownList');
@@ -94,6 +96,7 @@
         })  
     }
 
+    // Activates on changing the selected list in the drop down list, saves the selected list ID and name to storage.
     async function handleDDLChange(e)
     {
         let selectedOption = e.target.selectedOptions[0];
@@ -103,6 +106,7 @@
         RefreshItemList(selectedOption.value);
     }
 
+    // Passes supplied value into fetch request to create new Shopping List, client side validation ensuring list name is between 1 and 200 characters.
     async function handleCreateShoppingList(e)
     {
         e.preventDefault();
@@ -153,6 +157,7 @@
 
     }
 
+    // Deletes the currently selected shopping list in the drop down list.
     async function removeShoppingList()
     {
         let listID = sessionStorage.getItem("listID");
@@ -167,6 +172,7 @@
         }
     }
 
+    // Removes the selected item from the specific shopping list.
     async function removeShoppingListItem(itemID)
     {
         let listID = sessionStorage.getItem("listID");
@@ -193,6 +199,7 @@
         }
     }
 
+    // Handles displaying the shopping list items of the selected shopping list in the table.
     async function RefreshItemList(listID)
     {
         let result = await fetch("/ShoppingList/GetShoppingListItems?listID=" + listID);
@@ -200,11 +207,13 @@
         document.getElementById("shoppingItemContainer").innerHTML = htmlResult;
     }
 
+    // Shows the update product quantity modal.
     async function SpawnUpdateQuantityModal(itemID) {
         sessionStorage.setItem("productID", itemID);
         $('#updateShoppingListItemQuantity').modal('show')
     }
 
+    // Takes the inputed value and updates the selected shopping list item with the new quantity.
     async function UpdateShoppingListItemQuantity(quantity) {
         let listID = sessionStorage.getItem("listID");
         let itemID = sessionStorage.getItem("productID")

@@ -122,6 +122,7 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
+        // Swaps to the theme that isn't currently stored in a cookie.
         function switchTheme()
         {
             let currentTheme = localStorage.getItem("theme");
