@@ -58,12 +58,10 @@
             </div>
             <div class="modal-body" id="ModalBody" style="background-color: var(--colour-4)">
                 <form id="updateShoppingListItemQuantityForm">
-                    <div class="display:flex; flex-direction: row; justify-content-evenly">
-                        <label>Quantity: </label>
-                        <input type="number" name="updateProductQuantity" id="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
-                        <div class="col-2; py-2">
-                            <input type="button" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity(document.getElementById('updateProductQuantity').value)" />
-                        </div>
+                    <div>
+                        <label style="display:inline; padding-right: 5px">Quantity: </label>
+                        <input style="display:inline" type="number" name="updateProductQuantity" id="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
+                        <input style="display:inline;" type="button" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity(document.getElementById('updateProductQuantity').value)" />
                     </div>
                 </form>
             </div>
@@ -120,7 +118,9 @@
             Please Wait...
         `;
 
-        if (e.target["listName"].value.length >= 1 && e.target["listName"].value.length <= 200)
+        let inputName = e.target["listName"].value;
+        let listName = inputName.trim();
+        if (listName.length >= 1 && listName.length <= 200)
         {
             let result = await fetch("/ShoppingList/AddNewShoppingList", {
             method: "POST",
