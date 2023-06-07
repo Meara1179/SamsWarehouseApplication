@@ -62,7 +62,7 @@
                         <label>Quantity: </label>
                         <input type="number" name="updateProductQuantity" id="updateProductQuantity" class="form-control" value="1" min="1" max="99" />
                         <div class="col-2; py-2">
-                            <input type="submit" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity(document.getElementById('updateProductQuantity').value)" />
+                            <input type="button" value="Update Quantity" class="btn btn-success" onclick="UpdateShoppingListItemQuantity(document.getElementById('updateProductQuantity').value)" />
                         </div>
                     </div>
                 </form>
@@ -120,7 +120,7 @@
             Please Wait...
         `;
 
-        if (e.target["listName"].value.trim.length >= 1 && e.target["listName"].value.length <= 200)
+        if (e.target["listName"].value.length >= 1 && e.target["listName"].value.length <= 200)
         {
             let result = await fetch("/ShoppingList/AddNewShoppingList", {
             method: "POST",
