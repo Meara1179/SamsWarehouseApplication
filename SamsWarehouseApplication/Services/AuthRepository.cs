@@ -12,6 +12,12 @@ namespace SamsWarehouseApplication.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Calls the GetUserByyUserName method to get the appropriate user, then encrypts the supplied password using BCrypt and compares it against the hashed 
+        /// password stored on the database.
+        /// </summary>
+        /// <param name="credentials"></param>
+        /// <returns></returns>
         public AppUser Authenticate(AppUserDTO credentials)
         {
             var userDetails = GetUserByUserName(credentials.UserEmail);
@@ -28,6 +34,11 @@ namespace SamsWarehouseApplication.Services
             return null;
         }
 
+        /// <summary>
+        /// Compares the supplied email with the emails stored on the database, then returns the matching user.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         private AppUser GetUserByUserName(string email) 
         {
             var user = _context.AppUsers.Where(x => x.UserEmail.Equals(email)).FirstOrDefault();

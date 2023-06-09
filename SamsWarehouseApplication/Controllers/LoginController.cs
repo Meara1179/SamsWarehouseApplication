@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Threading.Tasks;
 using System.Threading;
-
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace SamsWarehouseApplication.Controllers
 {
@@ -51,11 +51,15 @@ namespace SamsWarehouseApplication.Controllers
 
             var claims = new List<Claim>
             {
+                // Creates a new claim of type Security Identifier and saves the user's ID to it.
                 new Claim(ClaimTypes.Sid, users.AppUserId.ToString()),
+                // Creates a new claim of the type Name and saves the user's email to it.
                 new Claim(ClaimTypes.Name, users.UserEmail),
+                // Creates a new claim of the type Role and saves the user's role to it.
                 new Claim(ClaimTypes.Role, users.AppUserRole)
             };
 
+            // Creates a new ClaimsIdentity using the 3 claim types established previously and sets the authetnication scheme to cookie based.
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             var authProperties = new AuthenticationProperties
@@ -64,6 +68,7 @@ namespace SamsWarehouseApplication.Controllers
                 IsPersistent = true,
             };
 
+            // Creates a new ClaimsPrincipal using the claimsIdentity varible and saves it to a thread.
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             Thread.CurrentPrincipal = claimsPrincipal;
 
@@ -76,7 +81,7 @@ namespace SamsWarehouseApplication.Controllers
         }
 
         /// <summary>
-        /// Clears the current session of all data, logging the user out, then redirects back to Home.
+        /// Logs the current user out, clearing all claims for the user.
         /// </summary>
         /// <returns>RedirectToAction</returns>
         public async Task<IActionResult> Logout()
@@ -85,6 +90,10 @@ namespace SamsWarehouseApplication.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Returns the Access Denied cshtml page.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult AccessDenied()
         {
             return View();

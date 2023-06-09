@@ -13,11 +13,16 @@ builder.Services.AddDbContext<ShoppingContext>(x => x.UseSqlServer(builder.Confi
 builder.Services.AddSession();
 builder.Services.AddDistributedMemoryCache();
 
+// Adds the Authentication service using Cookie based scheme.
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
+    // Sets the login view that will be returned when an unauthenticated user tried to access a secured endpoint.
     options.LoginPath= "/Login/Index";
+    // Automatically logs the user out after 10 minutes.
     options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+    // Sets the expiration time to reset if the user is still active.
     options.SlidingExpiration = true;
+    // Sets the view to be returned if a user is authenticated but not authorised to access the secured endpoint.
     options.AccessDeniedPath = "/Login/AccessDenied";
 });
 
